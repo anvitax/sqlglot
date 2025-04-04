@@ -29,6 +29,7 @@ def qualify(
     qualify_columns: bool = True,
     allow_partial_qualification: bool = False,
     validate_qualify_columns: bool = True,
+    validate_qualify_columns_aggregate_errors: bool = False,
     quote_identifiers: bool = True,
     identify: bool = True,
     infer_csv_schemas: bool = False,
@@ -58,7 +59,10 @@ def qualify(
         isolate_tables: Whether to isolate table selects.
         qualify_columns: Whether to qualify columns.
         allow_partial_qualification: Whether to allow partial qualification.
-        validate_qualify_columns: Whether to validate columns.
+        validate_qualify_columns: Whether to validate columns. Fails fast and returns the
+            first error seen.
+        validate_qualify_columns_aggregate_errors: Whether to aggregate the errors within
+            validate_qualify_columns. Error message returns all invalid columns.
         quote_identifiers: Whether to run the quote_identifiers step.
             This step is necessary to ensure correctness for case sensitive queries.
             But this flag is provided in case this step is performed at a later time.
@@ -99,6 +103,6 @@ def qualify(
         expression = quote_identifiers_func(expression, dialect=dialect, identify=identify)
 
     if validate_qualify_columns:
-        validate_qualify_columns_func(expression)
+        validate_qualify_columns_func(expression, aggregate_errors=validate_qualify_columns_aggregate_errors)
 
     return expression
